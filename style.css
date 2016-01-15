@@ -50,6 +50,9 @@ i:hover{
 	font-weight: bold;
 	vertical-align: top;
 }
+#taille{
+	margin-left: 5px;
+}
 .caseFilled{
 	background-color: #FE3D3E;
 }
