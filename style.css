@@ -34,6 +34,16 @@ i:hover{
 	border-radius: 1%;
 	background-color: #bbada0;
 }
+#win{
+	position: relative;
+	top: 15px;
+	display: none;
+}
+#lost{
+	position: relative;
+	top: 15px;
+	display: none;
+}
 .case{
 	padding: 0px;
 	margin-bottom: -3px;
