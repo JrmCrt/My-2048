@@ -13,6 +13,7 @@ $(document).ready(function(){
     });
     var score = 0;
     var addChar = false;
+
     function editscore(toAdd)
     {
         score += toAdd;
@@ -85,118 +86,174 @@ $(document).ready(function(){
 
             function randomStart(size)
             {
-                if(size < 2 || size > 10) size = 4;
+                if(size < 2 || size > 100) size = 4;
                 var arr = new Array(size);
                 var i, j;
                 for (i = 0; i < size; i+= 1) 
                 {   
                     arr[i] = new Array(size);
                 }
-            //var arr = [[0,4,0,0],[16,0,0,0],[0,32,8,0],[0,0,0,0]];
-            var x1 = Math.floor((Math.random() * size) + 0) ;
-            var y1 = Math.floor((Math.random() * size) + 0) ;
-            var nb1 = (Math.floor((Math.random() * 10) + 1) > 9 ) ? 4 : 2; 
-            var x2 = x1;
-            var y2 = y1;
-            var nb2 = (Math.floor((Math.random() * 10) + 1) > 9 ) ? 4 : 2; 
+                var x1 = Math.floor((Math.random() * size) + 0) ;
+                var y1 = Math.floor((Math.random() * size) + 0) ;
+                var nb1 = (Math.floor((Math.random() * 10) + 1) > 9 ) ? 4 : 2; 
+                var x2 = x1;
+                var y2 = y1;
+                var nb2 = (Math.floor((Math.random() * 10) + 1) > 9 ) ? 4 : 2; 
 
-            while( x1 === x2 && y1 === y2)
-            {
-                x2 = Math.floor((Math.random() * arr.length) + 0) ;
-                y2 = Math.floor((Math.random() * arr.length) + 0) ;
+                while( x1 === x2 && y1 === y2)
+                {
+                    x2 = Math.floor((Math.random() * arr.length) + 0) ;
+                    y2 = Math.floor((Math.random() * arr.length) + 0) ;
+                }
+
+                $("#container").css({
+                    "width" : size * 122.25+"px",
+                    "height" : size * 122.25  - (size * 4) +"px",
+                });
+
+                $("#container").html("");
+                for (i = 0; i < arr.length; i+= 1) 
+                {
+                    for (j = 0; j < arr[i].length; j+= 1) 
+                    {
+                        if(y1 === i && x1 === j) 
+                        {
+                            $("#container").append("<div class='case caseFilled c"+nb1+"'>"+nb1+"</div>");
+                            arr[i][j] = nb1;
+                        }   
+                        else if(y2 === i && x2 === j)
+                        {
+                            $("#container").append("<div class='case caseFilled c"+nb2+"'>"+nb2+"</div>");
+                            arr[i][j] = nb2;
+                        } 
+                        else 
+                        {
+                            $("#container").append("<div class='case'></div>");
+                            arr[i][j] = 0;
+                        }
+                    }   
+                }
+                return arr;
             }
 
-            $("#container").css({
-                "width" : size * 122.25+"px",
-                "height" : size * 122.25  - (size * 4) +"px",
+            var array = randomStart(size);
+
+            var click = false;
+            var x1 = 0;
+            var y1 = 0;
+            document.addEventListener("mousedown", function(event){
+                click = true;
+                x1 = event.clientX;
+                y1 = event.clientY; 
             });
 
-            $("#container").html("");
-            for (i = 0; i < arr.length; i+= 1) 
-            {
-                for (j = 0; j < arr[i].length; j+= 1) 
+            var positionX = [];
+            var positionY = [];
+
+            document.addEventListener("mousemove", function(event){
+                var clk = false;
+                positionX = [];
+                positionY = [];
+                while(click && !clk) 
                 {
-                    if(y1 === i && x1 === j) 
-                    {
-                        $("#container").append("<div class='case caseFilled c"+nb1+"'>"+nb1+"</div>");
-                        arr[i][j] = nb1;
-                    }   
-                    else if(y2 === i && x2 === j)
-                    {
-                        $("#container").append("<div class='case caseFilled c"+nb2+"'>"+nb2+"</div>");
-                        arr[i][j] = nb2;
+                    positionX.push(event.clientX);
+                    positionY.push(event.clientY);
+                    clk = true;
+                }    
+            });
+
+            document.addEventListener("mouseup", function(event){
+                click = false;
+                var x2 = positionX[0];
+                var y2 = positionY[0];
+                console.log(x1);
+                console.log(y1);
+                console.log(x2);
+                console.log(y2);
+                console.log("----");
+                if(x2 !== undefined)
+                {
+                    if(Math.abs(x2 - x1) > Math.abs(y2 - y1))
+                    {    
+                        if(x2 - x1 > 100) trig(39);
+                        else if(x1 - x2 > 100) trig(37);
                     } 
-                    else 
+                    else
                     {
-                        $("#container").append("<div class='case'></div>");
-                        arr[i][j] = 0;
-                    }
-                }   
-            }
-            return arr;
-        }
+                        if(y2 - y1 > 100) trig(40);
+                        else if(y1 - y2 > 100) trig(38); 
+                    }   
+                }
+            });
 
-        var array = randomStart(size);
+            function trig(kC) {
+                var e = $.Event('keydown');
+                    e.keyCode = kC;
+                    $('body').trigger(e);
+                };      
+            
+            
 
-        $(document).keydown(function(e)
-        {
-            if(e.keyCode === 82) 
-            {
-                var size = parseInt($("#gridSize").val());
-                array = randomStart(size);
-                resetScore();
-                $("#win").css("display", "none");
-                $("#lost").css("display", "none");
-            }
-            if(e.keyCode === 37) 
-            {
-                addChar = false;
-                if(moveLeft(array)) addChar = true;
-                if(merge(array, "left")) addChar = true;
-                displayGrid(array);
-                if(addChar) addRandomChar(array);
-                displayGrid(array);
-                if(win(array)) $("#win").css("display", "inline-block");
-                if(gameOver(array)) $("#lost").css("display", "inline-block");
-            }
-            if(e.keyCode === 38) 
-            {
-                addChar = false;
-                if(moveUp(array)) addChar = true;
-                if(merge(array, "up")) addChar = true;
-                displayGrid(array);
-                if(addChar) addRandomChar(array);
-                displayGrid(array);
-                if(win(array)) $("#win").css("displSay", "inline-block");
-                if(gameOver(array)) $("#lost").css("display", "inline-block");
-            }
-            if(e.keyCode === 39) 
-            {
-                addChar = false;
-                if(moveRight(array)) addChar = true;
-                if(merge(array, "right")) addChar = true;
-                displayGrid(array);
-                if(addChar) addRandomChar(array);
-                displayGrid(array);
-                if(win(array)) $("#win").css("display", "inline-block");
-                if(gameOver(array)) $("#lost").css("display", "inline-block");
-            }
-            if(e.keyCode === 40) 
-            {
-                addChar = false;
-                if(moveDown(array)) addChar = true;
-                if(merge(array, "down")) addChar = true;
-                displayGrid(array);
-                if(addChar) addRandomChar(array);
-                displayGrid(array);
-                if(win(array)) $("#win").css("display", "inline-block");
-                if(gameOver(array)) $("#lost").css("display", "inline-block");
-            }
-        });
+$(document).keydown(function(e)
+{
+    if(e.keyCode === 82) 
+    {
+        var size = parseInt($("#gridSize").val());
+        array = randomStart(size);
+        resetScore();
+        $("#win").css("display", "none");
+        $("#lost").css("display", "none");
+    }
+    if(e.keyCode === 37) 
+    {
+        addChar = false;
+        if(moveLeft(array)) addChar = true;
+        if(merge(array, "left")) addChar = true;
+        displayGrid(array);
+        if(addChar) addRandomChar(array);
+        displayGrid(array);
+        if(win(array)) $("#win").css("display", "inline-block");
+        if(gameOver(array)) $("#lost").css("display", "inline-block");
+    }
+    if(e.keyCode === 38) 
+    {
+        addChar = false;
+        if(moveUp(array)) addChar = true;
+        if(merge(array, "up")) addChar = true;
+        displayGrid(array);
+        if(addChar) addRandomChar(array);
+        displayGrid(array);
+        if(win(array)) $("#win").css("displSay", "inline-block");
+        if(gameOver(array)) $("#lost").css("display", "inline-block");
+    }
+    if(e.keyCode === 39) 
+    {
+        addChar = false;
+        if(moveRight(array)) addChar = true;
+        if(merge(array, "right")) addChar = true;
+        displayGrid(array);
+        if(addChar) addRandomChar(array);
+        displayGrid(array);
+        if(win(array)) $("#win").css("display", "inline-block");
+        if(gameOver(array)) $("#lost").css("display", "inline-block");
+    }
+    if(e.keyCode === 40) 
+    {
+        addChar = false;
+        if(moveDown(array)) addChar = true;
+        if(merge(array, "down")) addChar = true;
+        displayGrid(array);
+        if(addChar) addRandomChar(array);
+        displayGrid(array);
+        if(win(array)) $("#win").css("display", "inline-block");
+        if(gameOver(array)) $("#lost").css("display", "inline-block");
+    }
+});
 
 $('#new').click(function() {
     var size = parseInt($("#gridSize").val());
     array = randomStart(size);
+    resetScore();
     $("#win").css("display", "none");
     $("#lost").css("display", "none");
 });
@@ -332,12 +389,12 @@ function merge(arr, dir)
     {
         for (i = 0; i < arr.length; i+= 1) 
         {
-            for (j = arr[i].length - 2; j >= 0; j--) 
+            for (j = arr[i].length - 1; j >= 0; j--) 
             {
-                if(arr[i][j] === arr[i][j+1] && arr[i][j] !== 0)
+                if(arr[i][j] === arr[i][j-1] && arr[i][j] !== 0)
                 {
                     arr[i][j] = arr[i][j] + arr[i][j];
-                    arr[i][j+1] = 0;
+                    arr[i][j-1] = 0;
                     canMove = true;
                     editscore(arr[i][j]);
                 }           
@@ -367,12 +424,12 @@ function merge(arr, dir)
     {
         for (i = 0; i < arr.length; i+= 1) 
         {
-            for (j = arr[i].length - 2; j >= 0; j--) 
+            for (j = arr[i].length - 1; j > 0; j--) 
             {
-                if(arr[j][i] === arr[j+1][i] && arr[j][i] !== 0) 
+                if(arr[j][i] === arr[j-1][i] && arr[j][i] !== 0) 
                 {
                     arr[j][i] = arr[j][i] + arr[j][i];
-                    arr[j+1][i] = 0;
+                    arr[j-1][i] = 0;
                     canMove = true;
                     editscore(arr[j][i]);
                 } 
