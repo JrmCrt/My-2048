@@ -86,7 +86,7 @@ $(document).ready(function(){
 
             function randomStart(size)
             {
-                if(size < 2 || size > 100) size = 4;
+                if(size < 2 || size > 9) size = 4;
                 var arr = new Array(size);
                 var i, j;
                 for (i = 0; i < size; i+= 1) 
@@ -166,11 +166,6 @@ $(document).ready(function(){
                 click = false;
                 var x2 = positionX[0];
                 var y2 = positionY[0];
-                console.log(x1);
-                console.log(y1);
-                console.log(x2);
-                console.log(y2);
-                console.log("----");
                 if(x2 !== undefined)
                 {
                     if(Math.abs(x2 - x1) > Math.abs(y2 - y1))
