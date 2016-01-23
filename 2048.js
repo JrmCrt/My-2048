@@ -1,5 +1,24 @@
 /* globals document, $ */
 $(document).ready(function(){
+    var record;
+    if( localStorage.getItem('highScore') == null){
+        record = 0;
+        $("#bestScore").text(record);
+    }
+    else{
+        record = localStorage.getItem('highScore');
+        $("#bestScore").text(record);
+    }
+
+    function saveScore(score)
+    {
+        if(score > record) 
+        {
+            localStorage.setItem('highScore', score);
+            $("#bestScore").text(score);
+            record = localStorage.getItem('highScore');
+        }    
+    }
     "use strict";
     $("body").append('<div id="container"></div>');
     var size = parseInt($("#gridSize").val());
@@ -13,7 +32,7 @@ $(document).ready(function(){
     });
     var score = 0;
     var addChar = false;
-
+    resetScore();
     function editscore(toAdd)
     {
         score += toAdd;
@@ -30,8 +49,7 @@ $(document).ready(function(){
         for (i = 0; i < arr.length; i+= 1) 
             for (j = 0; j < arr[i].length; j+= 1)  if(arr[i][j] === 2048) return true; 
                 return false;
-        }
-        editscore(0);
+    }
         function displayGrid(arr)
         {
             var i, j;
@@ -218,7 +236,7 @@ $(document).keydown(function(e)
         displayGrid(array);
         if(addChar) addRandomChar(array);
         displayGrid(array);
-        if(win(array)) $("#win").css("displSay", "inline-block");
+        if(win(array)) $("#win").css("display", "inline-block");
         if(gameOver(array)) $("#lost").css("display", "inline-block");
     }
     if(e.keyCode === 39) 
@@ -467,6 +485,7 @@ function gameOver(arr)
             if(arr[j][i] === arr[j+1][i] && arr[j][i] !== 0) return false;
         }   
     }
+    saveScore(score);
     return true;
 }   
 });
